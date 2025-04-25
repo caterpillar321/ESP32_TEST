@@ -53,12 +53,10 @@ class BLEDataSourceImpl @Inject constructor(
         }
     }
 
-
     private val bluetoothAdapter: BluetoothAdapter by lazy {
         val manager = context.getSystemService(Context.BLUETOOTH_SERVICE) as BluetoothManager
         manager.adapter
     }
-
 
     private val scanCallback = object : ScanCallback() {
         override fun onScanResult(callbackType: Int, result: ScanResult) {
@@ -68,6 +66,7 @@ class BLEDataSourceImpl @Inject constructor(
                     Manifest.permission.BLUETOOTH_CONNECT
                 ) != PackageManager.PERMISSION_GRANTED
             ) { return }
+
             if (result.device.name == targetName) {
                 targetDevice = result.device
                 bluetoothAdapter.bluetoothLeScanner?.stopScan(this)
@@ -75,7 +74,6 @@ class BLEDataSourceImpl @Inject constructor(
             }
         }
     }
-
 
     override suspend fun startScan(targetDeviceName: String): Boolean {
         if (!hasBluetoothPermissions()) return false
@@ -87,7 +85,6 @@ class BLEDataSourceImpl @Inject constructor(
         val scanFilters = listOf(
             ScanFilter.Builder().setDeviceName(targetDeviceName).build()
         )
-
         val scanSettings = ScanSettings.Builder()
             .setScanMode(ScanSettings.SCAN_MODE_LOW_LATENCY)
             .build()
@@ -108,7 +105,6 @@ class BLEDataSourceImpl @Inject constructor(
 
         return targetDevice != null
     }
-
 
     private fun enableNotification(gatt: BluetoothGatt, serviceUuid: UUID, charUuid: UUID) {
         if (!hasBluetoothPermissions()) return
@@ -134,7 +130,6 @@ class BLEDataSourceImpl @Inject constructor(
             gatt.writeDescriptor(descriptor)
         }
     }
-
 
     override suspend fun connect(): Boolean {
         if (!hasBluetoothPermissions()) return false
